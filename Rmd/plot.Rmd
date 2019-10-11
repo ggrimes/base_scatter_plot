@@ -1,0 +1,69 @@
+---
+title: "Interactive Scatter Plot"
+output: ioslides_presentation
+runtime: shiny
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+require(Polychrome)
+require(scales)
+```
+
+
+```{r echo = FALSE}
+
+col_list<-c("black","white",alphabet.colors())
+
+selectInput("acol", label = "a col:",
+              choices = col_list, selected = col_list[1])
+selectInput("bcol", label = "b col",
+              choices = col_list, selected = col_list[3])
+selectInput("bg", label = "background",
+              choices = col_list, selected = col_list[2])
+
+selectInput("col_axis", label = "col.axis",
+              choices = col_list, selected = col_list[2])
+sliderInput("prop", label = "prop",
+              min = 0.1, max = 0.9, value = 0.5, step = 0.1)
+sliderInput("alpha", label = "alpha",
+              min = 0.1, max = 0.9, value = 0.5, step = 0.1)
+sliderInput("tcl", label = "tcl",
+              min = 0.1, max = 0.9, value = 0.5, step = 0.1)
+sliderInput("sd", label = "sd",
+              min = 0.1, max = 10, value = 0.5, step = 0.1)
+sliderInput("pch", label = "pch",
+              min = 1, max = 25, value = 16, step = 1)
+
+sliderInput("cex", label = "cex",
+              min = 0.1, max = 2, value = 0.1, step = 0.5)
+
+selectInput("bty", label = "bty:",
+              choices =c("o", "l", "7", "c", "u","]","n"), selected = "o")
+
+
+```
+
+
+```{r}
+renderPlot({
+  set.seed(1234)
+par(bg=input$bg)
+x<-rnorm(10000)
+y<-x+rnorm(1000,sd=input$sd)
+plot(x,y,pch=input$pch,
+     col=alpha(sample(c(input$acol,input$bcol),
+     size = 10000,
+     prob = c(input$prop,1-input$prop),replace=T),input$alpha),
+     cex=input$cex,
+     bty=input$bty,
+     col.axis=input$col_axis,
+     tcl=input$tcl)
+abline(lm(x~y))
+})
+
+
+
+```
